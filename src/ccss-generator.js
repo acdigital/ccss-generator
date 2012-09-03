@@ -5,50 +5,58 @@
  * @license MIT
  */
 /*
- Other tricks:
-_prop IE6, *prop IE7
-Gradient http://css-tricks.com/forums/discussion/17514/cross-browser-gradient/p1
-Min-height http://css-tricks.com/snippets/css/cross-browser-min-height/
-Opacity: http://css-tricks.com/snippets/css/cross-browser-opacity/
-border-radius (http://curved-corner.googlecode.com/files/border-radius.htc) http://cross-browser-tricks.blogspot.de/
-
- Vendor-prefixed CSS Property Map
- http://peter.sh/experiments/vendor-prefixed-css-property-overview/
- https://developer.mozilla.org/en-US/docs/CSS/CSS_Reference/Mozilla_Extensions
- http://peter.sh/experiments/vendor-prefixed-css-properties-trident/
-
  Vocabluary (W3C)
  A CSS rule consists of selector ('h1') and declaration ('color: red')
  The declaration has two parts: property name ('color') and property value ('red')
 */
-// @TODO ? opacity snippet?
 (function( window, undefined ){
     "use strict";
     var doc = window.document,
         Util = {
             trim: function( str ) {
                 return str.replace( /^\s\s*/, '' ).replace( /\s\s*$/, '' );
-            },
-            cutMultiple: function( valStr ) {
-                var re = /,(.*)$/g;
-                return valStr.replace( re, "" );
-            },
-            getValueParams: function( valStr ) {
-                var re = /\s+/g,
-                    pStr = this.trim( valStr.replace( re, " " ) ),
-                    re = /\s(px|em|cm|mm|in|pt|pc|%)/;
-                return pStr.replace(re, "$1").split( " " );
-            },
-            isUnit: function ( val ) {
-                var re = /(px|em|cm|mm|in|pt|pc|%)/,
-                    n = this.trim( val.replace( re, "" ) );
-                return !isNaN( parseFloat( n ) ) && isFinite( n );
             }
         },
         GeneratorException = function ( msg ) {
             this.name = "GeneratorException";
             this.message = msg || "GeneratorException";
         },
+        ValueParser = (function(){
+            return {
+                getColors: function( val ) {
+                    var match,
+                        matches = [],
+                        re = /(#([0-9A-Fa-f]{3,6})\b)|(AliceBlue|AntiqueWhite|Aqua|Aquamarine|Azure|Beige|Bisque|Black|BlanchedAlmond|Blue|BlueViolet|Brown|BurlyWood|CadetBlue|Chartreuse|Chocolate|Coral|CornflowerBlue|Cornsilk|Crimson|Cyan|DarkBlue|DarkCyan|DarkGoldenRod|DarkGray|DarkGrey|DarkGreen|DarkKhaki|DarkMagenta|DarkOliveGreen|Darkorange|DarkOrchid|DarkRed|DarkSalmon|DarkSeaGreen|DarkSlateBlue|DarkSlateGray|DarkSlateGrey|DarkTurquoise|DarkViolet|DeepPink|DeepSkyBlue|DimGray|DimGrey|DodgerBlue|FireBrick|FloralWhite|ForestGreen|Fuchsia|Gainsboro|GhostWhite|Gold|GoldenRod|Gray|Grey|Green|GreenYellow|HoneyDew|HotPink|IndianRed|Indigo|Ivory|Khaki|Lavender|LavenderBlush|LawnGreen|LemonChiffon|LightBlue|LightCoral|LightCyan|LightGoldenRodYellow|LightGray|LightGrey|LightGreen|LightPink|LightSalmon|LightSeaGreen|LightSkyBlue|LightSlateGray|LightSlateGrey|LightSteelBlue|LightYellow|Lime|LimeGreen|Linen|Magenta|Maroon|MediumAquaMarine|MediumBlue|MediumOrchid|MediumPurple|MediumSeaGreen|MediumSlateBlue|MediumSpringGreen|MediumTurquoise|MediumVioletRed|MidnightBlue|MintCream|MistyRose|Moccasin|NavajoWhite|Navy|OldLace|Olive|OliveDrab|Orange|OrangeRed|Orchid|PaleGoldenRod|PaleGreen|PaleTurquoise|PaleVioletRed|PapayaWhip|PeachPuff|Peru|Pink|Plum|PowderBlue|Purple|Red|RosyBrown|RoyalBlue|SaddleBrown|Salmon|SandyBrown|SeaGreen|SeaShell|Sienna|Silver|SkyBlue|SlateBlue|SlateGray|SlateGrey|Snow|SpringGreen|SteelBlue|Tan|Teal|Thistle|Tomato|Turquoise|Violet|Wheat|White|WhiteSmoke|Yellow|YellowGreen)|(rgba?\([\s,\d%]+\))/g;
+                    while ( match = re.exec( val ) ) {
+                        matches.push( match.shift() );
+                    }
+                    return matches;
+                },
+                getUnits: function( val ) {
+                    var match,
+                        matches = [],
+                        re = /(\d+\s*(px|em|cm|mm|in|pt|pc|%))/g;
+                    while ( match = re.exec( val ) ) {
+                        matches.push( match.shift().replace( /\s+/, '' ) );
+                    }
+                    return matches;
+                },
+                getSideOrCorner: function( val ) {
+                     var re = /to\s+(left|right|top|bottom)/i,
+                         match = re.exec( val );
+                     return match.length > 1 ? match[1] : false;
+                },
+                hasLinearGradient: function( val ) {
+                    var re = /linear-gradient/i;
+                     return re.test( val );
+
+                },
+                getValueParams: function( valStr ) {
+                    var re = /\s+/g;
+                    return Util.trim( valStr.replace( re, " " ) ).split( " " );
+                }
+            }
+        }()),
         Generator = function(){
             var
                 pref = { w: "-webkit-", g: "   -moz-", t: "    -ms-", p: "     -o-", n: "        " },
@@ -62,7 +70,6 @@ border-radius (http://curved-corner.googlecode.com/files/border-radius.htc) http
                     "animation-name": [ pref.w, pref.g, pref.t, pref.n ],
                     "animation-play-state": [ pref.w, pref.g, pref.t, pref.n ],
                     "animation-timing-function": [ pref.w, pref.g, pref.t, pref.n ],
-
                     "appearance" : [ pref.w, pref.g, pref.t, pref.n ],
                     "backface-visibility" : [ pref.w, pref.g, pref.t, pref.n ],
                     "background-clip" : [ pref.w, pref.g, pref.t, pref.p, pref.n ],
@@ -77,8 +84,6 @@ border-radius (http://curved-corner.googlecode.com/files/border-radius.htc) http
                     "border-before-color" : [ pref.w, pref.n ],
                     "border-before-style" : [ pref.w, pref.n ],
                     "border-before-width" : [ pref.w, pref.n ],
-
-
                     "border-bottom-left-radius" : [ pref.w, pref.n ],
                     "border-bottom-right-radius" : [ pref.w, pref.n ],
                     "border-end" : [ pref.w, pref.g, pref.n ],
@@ -97,7 +102,6 @@ border-radius (http://curved-corner.googlecode.com/files/border-radius.htc) http
                     "border-start-width" : [ pref.w, pref.g, pref.n ],
                     "border-top-left-radius" : [ pref.w, pref.g, pref.t, pref.p, pref.n ],
                     "border-top-right-radius" : [ pref.w, pref.g, pref.t, pref.p, pref.n ],
-
                     "box-align" : [ pref.w, pref.g, pref.t, pref.n ],
                     "box-decoration-break" : [ pref.w, pref.p, pref.n ],
                     "box-direction" : [ pref.w, pref.g, pref.t, pref.n ],
@@ -105,8 +109,6 @@ border-radius (http://curved-corner.googlecode.com/files/border-radius.htc) http
                     "box-flex-group" : [ pref.w, pref.n ],
                     "box-lines" : [ pref.w, pref.t, pref.n ],
                     "box-ordinal-group" : [ pref.w, pref.t, pref.p, pref.n ],
-
-
                     "box-orient" : [ pref.w, pref.g, pref.t, pref.n ],
                     "box-pack" : [ pref.w, pref.g, pref.t, pref.n ],
                     "box-shadow" : [ pref.w, pref.g, pref.n ],
@@ -166,7 +168,7 @@ border-radius (http://curved-corner.googlecode.com/files/border-radius.htc) http
                     "word-wrap" : [ pref.w, pref.g, pref.t, pref.p, pref.n ],
                     "writing-mode" : [ pref.w, pref.t, pref.p, pref.n ]
                 },
-                nonStandardDeclarationMap = {
+                tricksMap = {
                     "border-bottom-left-radius" : [
                         function( val ) { return "   -moz-border-radius-bottomleft: "
                             + val + " /* FF 1.0 - 12.0 */ \n"; }
@@ -175,18 +177,82 @@ border-radius (http://curved-corner.googlecode.com/files/border-radius.htc) http
                         function( val ) { return "   -moz-border-radius-bottomright: "
                             + val + " /* FF 1.0 - 12.0 */ \n"; }
                     ],
+                    "border-radius" : [
+                        function( val ) {
+                            return "/* behavior: url(./border-radius.htc); For IE, download and customize htc file http://curved-corner.googlecode.com/files/border-radius.htc */";
+                        }
+                    ],
+                    "min-height" : [
+                        function( val ) {
+                            return "height: auto !important; /* @see: http://css-tricks.com/snippets/css/cross-browser-min-height/ */\n"
+                            + "height: " + val + ";\n"
+                            + "min-height: " + val + ";\n";
+                        }
+                    ],
+                    "background-image" : [
+                        function( val ) {
+                            var inverted = {
+                                    "bottom" : "top",
+                                    "top" : "bottom",
+                                    "left" : "right",
+                                    "right" : "left"
+                                },
+                                colors,
+                                startColor,
+                                endColor,
+                                sideOrCorner;
+
+                                if ( !ValueParser.hasLinearGradient( val ) ) {
+                                    return '';
+                                }
+                                colors = ValueParser.getColors( val );
+                                startColor = colors[ 0 ] || "black";
+                                endColor = colors[ 1 ] || "black";
+                                sideOrCorner = ValueParser.getSideOrCorner( val );
+
+                                return "background-color: " + startColor + ";\n" +
+                                        "background-image: -webkit-gradient(linear, left "
+                                            + inverted[ sideOrCorner ] + ", left "
+                                            + sideOrCorner + ", from(" + startColor + "), to(" + endColor + ")); /* Saf4+, Chrome */\n" +
+                                        "background-image: -webkit-linear-gradient("
+                                            + inverted[ sideOrCorner ] + ", "
+                                            + startColor + ", "
+                                            + endColor + "); /* Chrome 10+, Saf5.1+, iOS 5+ */\n" +
+                                        "background-image:    -moz-linear-gradient("
+                                            + inverted[ sideOrCorner ] + ", "
+                                            + startColor + ", "
+                                            + endColor + "); /* FF3.6+ */\n" +
+                                        "background-image:     -ms-linear-gradient("
+                                            + inverted[ sideOrCorner ] + ", "
+                                            + startColor + ", " + endColor + "); /* IE10 */\n" +
+                                        "background-image:      -o-linear-gradient("
+                                            + inverted[ sideOrCorner ] + ", "
+                                            + startColor + ", "
+                                            + endColor + "); /* Opera 11.10+ */\n" +
+                                        "background-image:    " + val + ";\n" +
+                                        "filter:  progid:DXImageTransform.Microsoft.gradient("
+                                            + "GradientType=0,startColorstr='"
+                                            + startColor + "', endColorstr='"
+                                            + endColor + "'); /* IE6 & IE7 */\n"
+                                        "-ms-filter: \"progid:DXImageTransform.Microsoft.gradient("
+                                            + "GradientType=0,startColorstr='"
+                                            + startColor + "', endColorstr='"
+                                            + endColor + "')\"; /* IE8 */\n";
+
+                        }
+                    ],
                     "transition" : [
                         // @TODO treat multiple values (,)
                         function( val ) {
                             var out = '',
                                 engine,
-                                params = Util.getValueParams( val ),
+                                params = ValueParser.getValueParams( val ),
                                 transPropPrefs = params.length ? propPrefixMap[ params[ 0 ] ] : [];
 
                             for ( engine in pref ) {
                                 if ( pref.hasOwnProperty( engine ) ) {
                                     var pClone = Object.create( params );
-                                    if ( transPropPrefs.indexOf( pref[ engine ] ) !== -1 ) {
+                                    if ( transPropPrefs && transPropPrefs.indexOf( pref[ engine ] ) !== -1 ) {
                                         pClone[ 0 ] = Util.trim( pref[ engine ] ) + pClone[ 0 ];
                                     }
                                     out += pref[ engine ] + "transition: " + pClone.join(" ")+ "\n";
@@ -198,31 +264,17 @@ border-radius (http://curved-corner.googlecode.com/files/border-radius.htc) http
                     "box-shadow" : [
                         function( val ) {
                             var info = { "inset": "false", "x": 0, "y": 0, "blur": 0, "color": "black" },
-                                params = Util.getValueParams( Util.cutMultiple( val ) );
+                                re = /inset/i,
+                                units = ValueParser.getUnits( val ),
+                                colors = ValueParser.getColors( val );
 
-                            if ( params.length && !Util.isUnit( params[ 0 ] ) ) {
-                                if ( params[ 0 ] === "INSET" ) {
-                                    info.inset = "true";
-                                }
-                                params.shift();
-                            }
 
-                            if ( params.length && Util.isUnit( params[ 0 ] ) ) {
-                                info.x = params[ 0 ];
-                                params.shift();
-                            }
-                            if ( params.length && Util.isUnit( params[ 0 ] ) ) {
-                                info.y = params[ 0 ];
-                                params.shift();
-                            }
-                            if ( params.length && Util.isUnit( params[ 0 ] ) ) {
-                                info.blur = params[ 0 ];
-                                params.shift();
-                            }
-                            if ( params.length ) {
-                                info.color = params[ 0 ];
-                                params.shift();
-                            }
+                            info.x = units[0] || "0";
+                            info.y = units[1] || "0";
+                            info.blur = units[2] || "0";
+                            info.color = colors[0] || "black";
+                            re.test( val ) && ( info.inset = "true" );
+
                             return "\nfilter:progid:DXImageTransform.Microsoft.dropshadow"
                             + "(\n    OffX=" + info.x + ", OffY=" + info.y + ", Color='"
                             + info.color + "', Positive='" + info.inset + "'\n); /* IE 5.5 */ \n"
@@ -245,9 +297,9 @@ border-radius (http://curved-corner.googlecode.com/files/border-radius.htc) http
                 throwError = function( msg ) {
                     throw new GeneratorException( msg );
                 };
-                
-                nonStandardDeclarationMap["transition-property"] =
-                    nonStandardDeclarationMap.transition;
+
+                tricksMap["transition-property"] =
+                    tricksMap.transition;
 
             return {
                 validate: function( declaration ) {
@@ -277,10 +329,10 @@ border-radius (http://curved-corner.googlecode.com/files/border-radius.htc) http
                     }
                     return out;
                 },
-                getNonStandardDeclarations: function( prop, val ) {
+                getTricks: function( prop, val ) {
                     var out = '',
                         i = 0,
-                        handlers = nonStandardDeclarationMap[ prop ],
+                        handlers = tricksMap[ prop ],
                         len = handlers ? handlers.length : 0;
 
                     for ( ; i < len; i++ ) {
@@ -294,7 +346,7 @@ border-radius (http://curved-corner.googlecode.com/files/border-radius.htc) http
 
                     this.validate( declaration );
                     out += this.getPrefixedDeclarations( declaration.propName, declaration.propValue );
-                    out += this.getNonStandardDeclarations( declaration.propName, declaration.propValue );
+                    out += this.getTricks( declaration.propName, declaration.propValue );
                     return out;
                 }
             }
@@ -311,8 +363,10 @@ border-radius (http://curved-corner.googlecode.com/files/border-radius.htc) http
                     var that = this;
                     form.onsubmit = function( e ) {
                         e.preventDefault();
+                        that.reset();
                         try {
-                            that.setOutput( generator.generateFor( that.getInput() ) );
+                            that.setOutput(  generator.generateFor( that.getInput() )
+                                || input.value );
                         }
                         catch( e if e instanceof GeneratorException) {
                             that.setOnError( e.message );

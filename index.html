@@ -44,7 +44,7 @@
             <article>
 
                 <p>Every time assigning a new CSS3 rule I have to recall how many vendor prefixes was ever introduced to the property, was that a non-standard syntax and is there any alternatives for IE 5-8 browsers. So, I made this service, which just gives all additional CSS declaration to make the given W3C one cross-browser.</p>
-                <p>How does it work? You provide a CSS declaration (e.g. <var>transition: inset 5px black;</var>) and the services tries to make it cross-browser. </p>
+                <p>How does it work? You provide a CSS declaration (e.g. <var>transition: inset 5px black;</var> or <var>background-image: linear-gradient(to bottom, #444444, #999999);</var> ) and the services tries to make it cross-browser. </p>
                 <p>If you spot any inaccuracy or missing compatibility pattern, please feel free, to contact me. </p>
             </article>
             <div class="form">
@@ -60,6 +60,39 @@
                     <textarea name="output"></textarea>
                 </form>
             </div>
+            <article>
+                <p>P.S. I'm aware of <a href="http://prefixr.com">prefixr.com</a>. Apparently, it cares only for the modern browsers. E.g. it generates CSS for box-shadow property with the only -webkit- vendor prefix, when for Firefox 3.5 <a href="https://developer.mozilla.org/en-US/docs/CSS/box-shadow">it has to be prefixed</a>. Saying nothing of any shoring for older IE browsers.
+
+                <p>
+                <p>Sources:<p>
+                <ul>
+                    <li>
+                        <a href="http://www.quirksmode.org/css/contents.html">http://www.quirksmode.org/css/contents.html</a>
+                    </li>
+                    <li>
+                        <a href="http://peter.sh/experiments/vendor-prefixed-css-property-overview/">http://peter.sh/experiments/vendor-prefixed-css-property-overview/</a>
+                    </li>
+                    <li>
+                        <a href="https://developer.mozilla.org/en-US/docs/CSS/CSS_Reference/Mozilla_Extensions">https://developer.mozilla.org/en-US/docs/CSS/CSS_Reference/Mozilla_Extensions</a>
+                    </li>
+                    <li>
+                        <a href="http://www.opera.com/docs/specs/presto2.12/">http://www.opera.com/docs/specs/prestox.xx/</a>
+                    </li>
+                    <li>
+                        <a href="http://msdn.microsoft.com/en-us/library/ms673539%28v=vs.85%29.aspx">http://msdn.microsoft.com/en-us/library/ms673539%28v=vs.85%29.aspx</a>
+                    </li>
+                </ul>
+
+                <p>Legacy browser support tricks:<p>
+
+                    <ul>
+                        <li><a href="http://css-tricks.com/forums/discussion/17514/cross-browser-gradient/p1">Gradient</a></li>
+                        <li><a href="http://css-tricks.com/snippets/css/cross-browser-min-height/">Min-height</a> </li>
+                        <li><a href="http://css-tricks.com/snippets/css/cross-browser-opacity/">Opacity</a></li>
+                        <li><a href="http://cross-browser-tricks.blogspot.de/">Border-radius</a></li>
+                    </ul>
+
+            </article>
 
             <div class="download">
                 <a class="btn btn-inverse btn-large" href="https://github.com/dsheiko/ccss-generator">Download the latest version from GitHub</a>
@@ -76,7 +109,7 @@
     </footer>
 
      <script type="text/javascript" src="./src/ccss-generator.js"></script>
-     <script src="http://demo.dsheiko.com/share/js/sharebar.js" type="text/javascript"></script>
+     <!--script src="http://demo.dsheiko.com/share/js/sharebar.js" type="text/javascript"></script-->
 
 </body>
 </html>
