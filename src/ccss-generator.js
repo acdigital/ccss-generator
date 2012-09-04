@@ -287,9 +287,9 @@
                                 perVal = oVal * 100;
                             return "-khtml-opacity: " + oVal + ";\n"
                             + "  -moz-opacity: " + oVal + ";\n"
-                            + "       opacity: " + oVal + ";\n\n"
+                            + "       opacity: " + oVal + ";\n"
                             + "       filter: alpha(opacity=" + perVal + ");\n"
-                            + "-ms-filter:\"progid:DXImageTransform.Microsoft.Alpha(Opacity="
+                            + "   -ms-filter:\"progid:DXImageTransform.Microsoft.Alpha(Opacity="
                                 + perVal + ")\";";
                         }
                     ]
