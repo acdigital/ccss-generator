@@ -361,17 +361,20 @@
             return {
                 init: function() {
                     var that = this;
-                    form.onsubmit = function( e ) {
+                    form.addEventListener("submit", function( e ) {
                         e.preventDefault();
                         that.reset();
                         try {
-                            that.setOutput(  generator.generateFor( that.getInput() )
-                                || input.value );
+                            that.setOutput(  generator.generateFor( that.getInput() ) || input.value );
                         }
-                        catch( e if e instanceof GeneratorException) {
-                            that.setOnError( e.message );
+                        catch( e ) {
+                            if (e instanceof GeneratorException) {
+                                that.setOnError( e.message );
+                            } else {
+                                throw new Error( e );
+                            }
                         }
-                    }
+                    }, false);
                 },
                 reset: function() {
                     input.removeAttribute( "class" );
