@@ -4,14 +4,15 @@
   "version": "1.0",
   "author": "Dmitry Sheiko",
   "description": "You provide a CSS declaration (e.g. transition: inset 5px black;) and the services tries to make it cross-browser. It adds All required vendor-prefixed alternatives and tricks to support IE 5.5 - 8 (e.g. opacity: 0.5;) ",
-  "homepage": "ttps://github.com/dsheiko/ccss-generator",
+  "homepage": "http://demo.dsheiko.com/ccss/",
   "licenses": [
    {
-       "type": "MIT"
+       "type": "MIT",
+       "url": "http://opensource.org/licenses/mit-license.php"
    }],
   "repository": {
     "type": "git",
-    "url": "ttps://github.com/dsheiko/ccss-generator"
+    "url": "https://github.com/dsheiko/ccss-generator"
   },
   "main": "./src/ccss-generator.js",
   "dependencies": {

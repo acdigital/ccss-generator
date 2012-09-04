@@ -35,7 +35,7 @@ var document = window.document,
     filter: alpha(opacity=95);\
 }\
 #pcb-boundingBox .form {\
-    position: absolute;\
+    position: fixed;\
     top: 90px;\
     left: 50%;\
     margin-left: -300px;\
