@@ -394,9 +394,7 @@
     GeneratorException.prototype = new Error();
     GeneratorException.prototype.constructor = GeneratorException;
 
-    doc.querySelector( "body" ).onload = function() {
-        var form = new FormHandler();
-        form.init();
-    }
+    var form = new FormHandler();
+    form.init();
 
 }( window ));

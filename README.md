@@ -1,6 +1,7 @@
 Cross-browser CSS generator
 ==============
 
+Demo:
 
 Every time assigning a new CSS3 rule I have to recall how many vendor prefixes was ever introduced to the property, was that a non-standard syntax and is there any tricks to support IE 5-8 browsers. So, I made this service, which simply generates desired CSS for me.
 

@@ -155,14 +155,34 @@ body {
 
     body > section {
         width: 880px;
-        min-height: 962px;
-        height: 100%;
         margin: 0 auto;
         background-color: white;
         padding: 20px 30px 102px 30px;
         -webkit-box-shadow: 4px 0 10px #cccccc, -4px 0 10px #cccccc;
            -moz-box-shadow: 4px 0 10px #cccccc, -4px 0 10px #cccccc;
                 box-shadow: 4px 0 10px #cccccc, -4px 0 10px #cccccc;
+    }
+
+    body > section aside {
+        float: right;
+        width: 200px;
+        padding: 0 20px 20px 20px;
+        text-align: center;
+    }
+
+    body > section aside a {
+        border-radius: 5px;
+        -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+           -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+
+        color: #FFFFFF;
+        text-decoration: none;
+        display: inline-block;
+        font-weight: 700;
+        padding: 7px 20px;
+        margin: 10px;
+        background-color: #0090FF;
     }
 
     article h2 {
